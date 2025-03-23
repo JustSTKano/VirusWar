@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Input;
-using VirusWar.Data.Cells;
-using VirusWar.Data.DTO;
+﻿using VirusWar.Data.Cells;
 
 namespace VirusWar.Engine
 {
