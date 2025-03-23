@@ -9,9 +9,12 @@ using VirusWar.Data.DTO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace VirusWar.Data
+namespace VirusWar.Engine
 {
-    class Reader
+    /// <summary>
+    /// 
+    /// </summary>
+    class MapStorage
     {
         /// <summary>
         /// Путь до файлов уровней
@@ -21,28 +24,23 @@ namespace VirusWar.Data
         /// Размерность игрового поля
         /// </summary>
         public (int x, int y) Size { get; private set; }
+        public int Mode { get; set; }
         public int SizeList { get; private set; }
 
         public MapCell[,] Map { get; private set; } = new MapCell[0, 0];
 
 
         /// <summary>
-        /// Получение размерности игрокого поля
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        private static (int x, int y) GetMaxPositions(string[] pos) => (pos.Select(s => s.Split().Length).ToArray().Max(), pos.Length);
-
-        /// <summary>
         /// Проверка наличия файлов
         /// </summary>
         /// <param name="levelsFolder"></param>
-        public Reader(string levelsFolder)
+        public MapStorage(string levelsFolder)
         {
             Pathlevel = levelsFolder;
             if (Directory.Exists(Pathlevel))
             {
                 ReadJsMap();
+                Mode = 1; // 0 - игроки 1 - пк
             }
         }
 
@@ -66,7 +64,8 @@ namespace VirusWar.Data
                 {
                     Map[i, j] = new MapCell
                     {
-                        Status = (StatusEnum)linestr[j],
+                        Type = linestr[j],
+                        Status = StatusEnum.None,
                         Belong = BelongEnum.None,
                         Checker = false
                     };
@@ -80,7 +79,7 @@ namespace VirusWar.Data
                 Map[a.x, a.y].Status = StatusEnum.Virus;
                 Map[a.x, a.y].Belong = BelongEnum.SecondPlayer;              
             }
-            TempEnemy();
+           // TempEnemy();
         }
 
         public void TempEnemy()
