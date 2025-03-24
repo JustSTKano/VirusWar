@@ -18,7 +18,7 @@ namespace VirusWar.Engine
         /// <summary>
         /// Выбор режима игры(Ну бля пока так). 0 - игроки, 1-против компа, 2-комп против компа(тупо отладка)
         /// </summary>
-        public static int Mode = 2;
+        public static int Mode = 1;
         /// <summary>
         /// Игрок, сделавший последний ход.
         /// </summary>
