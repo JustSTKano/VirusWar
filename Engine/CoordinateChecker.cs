@@ -1,4 +1,5 @@
-﻿using VirusWar.Data.Cells;
+﻿using System.Windows.Media.Animation;
+using VirusWar.Data.Cells;
 
 namespace VirusWar.Engine
 {
@@ -20,31 +21,25 @@ namespace VirusWar.Engine
         }
         public static bool CheckLocal(MapStorage Storage, (int x, int y) coord, StatusEnum type, BelongEnum Player)
         {
-            var (x, y) = coord;
-
-            if ((Storage.Map[y + 1, x    ].Status == type) && (Storage.Map[y + 1, x    ].Belong == Player)) return true;
-            if ((Storage.Map[y + 1, x + 1].Status == type) && (Storage.Map[y + 1, x + 1].Belong == Player)) return true;
-            if ((Storage.Map[y + 1, x - 1].Status == type) && (Storage.Map[y + 1, x - 1].Belong == Player)) return true;
-            if ((Storage.Map[y    , x + 1].Status == type) && (Storage.Map[y    , x + 1].Belong == Player)) return true;
-            if ((Storage.Map[y    , x - 1].Status == type) && (Storage.Map[y    , x - 1].Belong == Player)) return true;
-            if ((Storage.Map[y - 1, x + 1].Status == type) && (Storage.Map[y - 1, x + 1].Belong == Player)) return true;
-            if ((Storage.Map[y - 1, x    ].Status == type) && (Storage.Map[y - 1, x    ].Belong == Player)) return true;
-            if ((Storage.Map[y - 1, x - 1].Status == type) && (Storage.Map[y - 1, x - 1].Belong == Player)) return true;
-
-            return false;
+            
+            var check = false;
+            foreach(var a in Storage.Local)
+            {
+                var (x, y) = (coord.x+a.x,coord.y+a.y);
+                if ((Storage.Map[y, x].Status == type) && (Storage.Map[y, x].Belong == Player)) check = true;
+            }
+            return check;
         }
         public static bool CheckFort(MapStorage Storage, (int x, int y) coord, BelongEnum Player)
         {
+            var check = false;
             Storage.Map[coord.y, coord.x].Checker = true;
-            if (LastChek(Storage, (coord.x, coord.y + 1), Player)) return true;
-            if (LastChek(Storage, (coord.x + 1, coord.y + 1), Player)) return true;
-            if (LastChek(Storage, (coord.x - 1, coord.y + 1), Player)) return true;
-            if (LastChek(Storage, (coord.x + 1, coord.y), Player)) return true;
-            if (LastChek(Storage, (coord.x - 1, coord.y), Player)) return true;
-            if (LastChek(Storage, (coord.x, coord.y - 1), Player)) return true;
-            if (LastChek(Storage, (coord.x + 1, coord.y - 1), Player)) return true;
-            if (LastChek(Storage, (coord.x - 1, coord.y - 1), Player)) return true;
-            return false;
+            foreach (var a in Storage.Local)
+            {
+                var (x, y) = (coord.x + a.x, coord.y + a.y);
+                if (LastChek(Storage, (x, y), Player)) check = true;
+            }
+            return check;
         }
        public static bool LastChek(MapStorage Storage, (int x, int y) coord, BelongEnum Player)
        {

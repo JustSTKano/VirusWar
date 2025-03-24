@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System.Numerics;
+using System.Windows;
+using System.Windows.Controls;
 using VirusWar.Data.Cells;
 
 namespace VirusWar.Engine
@@ -9,7 +11,18 @@ namespace VirusWar.Engine
     internal class MapInfo
     {
         public static bool GameStatus = false;
-
+        /// <summary>
+        /// Переменная хода
+        /// </summary>
+        static int StepCount = 0;
+        /// <summary>
+        /// Выбор режима игры(Ну бля пока так). 0 - игроки, 1-против компа, 2-комп против компа(тупо отладка)
+        /// </summary>
+        public static int Mode = 2;
+        /// <summary>
+        /// Игрок, сделавший последний ход.
+        /// </summary>
+        public static BelongEnum LastPlayerStep = BelongEnum.None;
 
         /// <summary>
         /// Проверка Всех ячеек на возможность сделать ход
@@ -22,16 +35,16 @@ namespace VirusWar.Engine
         {
             AllMapCleaner(Storage);
             GameStatus = false;
-            for (int i = 1; i < Storage.Size.x-1; i++)
+            for (int i = 1; i < Storage.Size.x - 1; i++)
             {
-                for (int j = 1; j < Storage.Size.y-1; j++)
+                for (int j = 1; j < Storage.Size.y - 1; j++)
                 {
                     if (CoordinateChecker.CheckCoord(Storage, (i, j), player))
                     {
                         Storage.Map[j, i].Type = TypeEnum.Possible;
                         GameStatus = true;
                     }
-                      
+
                 }
             }
         }
@@ -45,10 +58,7 @@ namespace VirusWar.Engine
             {
                 for (int j = 1; j < Reader.Size.y - 1; j++)
                 {
-
                     Reader.Map[j, i].Type = TypeEnum.Empty;
-                   
-
                 }
             }
         }
@@ -64,10 +74,7 @@ namespace VirusWar.Engine
             return false;
         }
 
-        /// <summary>
-        /// Переменная хода
-        /// </summary>
-        static int StepCount = 0;
+
 
         /// <summary>
         /// Получение информации об порядке хода (Какой игрок ходит)
@@ -83,31 +90,61 @@ namespace VirusWar.Engine
         /// <summary>
         /// Перезапись ячейки после сделанного хода
         /// </summary>
-        /// <param name="Reader"></param>
+        /// <param name="Storage"></param>
         /// <param name="coord"></param>
         /// <param name="Canvas"></param>
-        internal static void ReWrite(MapStorage Reader, (int x, int y) coord, Canvas Canvas)
+        internal static void ReWrite(MapStorage Storage, (int x, int y) coord, Canvas Canvas)
         {
-            if (Reader.Map[coord.y, coord.x].Status == StatusEnum.Virus)
+            if (Storage.Map[coord.y, coord.x].Status == StatusEnum.Virus)
             {
-                Reader.Map[coord.y, coord.x].Status = StatusEnum.Fort;
-                Reader.Map[coord.y, coord.x].Belong = GetPlayerTurn();
+                Storage.Map[coord.y, coord.x].Status = StatusEnum.Fort;
+                Storage.Map[coord.y, coord.x].Belong = GetPlayerTurn();
             }
             else
             {
-                Reader.Map[coord.y, coord.x].Status = StatusEnum.Virus;
-                Reader.Map[coord.y, coord.x].Belong = GetPlayerTurn();
+                Storage.Map[coord.y, coord.x].Status = StatusEnum.Virus;
+                Storage.Map[coord.y, coord.x].Belong = GetPlayerTurn();
             }
+            LastPlayerStep = GetPlayerTurn();
             StepCount++;
 
-            AllMapChecker(Reader, GetPlayerTurn());
-            Graphics.RenderMap(Reader, Canvas);
-            if (Reader.Mode == 2) PCLogic.PCtry(Reader, Canvas, GetPlayerTurn());
-            if (Reader.Mode == 1) PCLogic.PCtry(Reader, Canvas, BelongEnum.SecondPlayer);
+            AllMapChecker(Storage, GetPlayerTurn());
+            Graphics.RenderMap(Storage, Canvas);
 
+            if(!GameStatus) Winner();
+
+            PCLogic.PCtry(Storage, Canvas);
+            
 
         }
 
+        /// <summary>
+        /// Проверка победы
+        /// </summary>
+        internal static void Winner()
+        {
+            var playertemp = GetPlayerTurn();
 
+            if (playertemp == LastPlayerStep)
+            {
+                switch (LastPlayerStep)   /// Ситуация 1. Ты не сделал 3 хода, ходов не осталось. Значит проиграл
+                {
+                    case BelongEnum.FirstPlayer: { MessageBox.Show("Сорян GG, Победил Синий, ты не сделал 3 хода"); break; }
+                    case BelongEnum.SecondPlayer: { MessageBox.Show("Сорян GG, Победил Красный, ты не сделал 3 хода"); break; }
+                    default: break;
+                }
+            }
+            else
+            {
+                switch (LastPlayerStep) /// Ситуация 2. Ты сделал 3 хода, и следующему игроку некуда ходить, ты выиграл
+                {
+                    case BelongEnum.FirstPlayer: { MessageBox.Show("Сорян GG, Победил Красный, у Синего нет доступных ходов"); break; }
+                    case BelongEnum.SecondPlayer: { MessageBox.Show("Сорян GG, Победил Синий, у Красного нет доступных ходов"); break; }
+                    default: break;
+                }
+            }
+           // MessageBox.Show("ы");
+
+        }
     }
 }

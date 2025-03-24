@@ -18,10 +18,13 @@ namespace VirusWar.Engine
         /// Размерность игрового поля
         /// </summary>
         public (int x, int y) Size { get; private set; }
-        public int Mode { get; set; }
+
+        
         public int SizeList { get; private set; }
 
         public MapCell[,] Map { get; private set; } = new MapCell[0, 0];
+
+        public (int x, int y)[] Local = new (int x, int y)[8];
 
 
         /// <summary>
@@ -34,7 +37,6 @@ namespace VirusWar.Engine
             if (Directory.Exists(Pathlevel))
             {
                 ReadJsMap();
-                Mode = 1; // 0 - игроки 1 - пк
             }
         }
 
@@ -73,7 +75,20 @@ namespace VirusWar.Engine
                 Map[a.x, a.y].Status = StatusEnum.Virus;
                 Map[a.x, a.y].Belong = BelongEnum.SecondPlayer;              
             }
+            InitLocality();
            // TempEnemy();
+        }
+
+
+        public void InitLocality()
+        {
+            int temp = 0;
+            for (int i = -1; i<2; i++)
+                for (int j = -1; j< 2; j++)
+                {
+                    Local[temp] = (i, j);
+                    if (!(Local[temp] == (0,0))) temp++;
+                }
         }
 
         public void TempEnemy()
