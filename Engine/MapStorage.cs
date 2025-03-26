@@ -22,30 +22,8 @@ namespace VirusWar.Engine
         /// Ячейка поля
         /// </summary>
         public MapCell[,] Map { get; private set; } = new MapCell[0, 0];
-        /// <summary>
-        /// Передаточные координаты окрестности вокруг ячейки
-        /// </summary>
-        public readonly (int x, int y)[] Local = [( -1, -1 ), ( -1, 0 ), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)];
-        /// <summary>
-        /// Статус игры
-        /// </summary>
-        public bool IsGameStatus = false;
-        /// <summary>
-        /// Переменная хода
-        /// </summary>
-        public int StepCount = 0;
-        /// <summary>
-        /// Выбор режима игры(Ну бля пока так). 0 - игроки, 1-против компа, 2-комп против компа(тупо отладка)
-        /// </summary>
-        public int Mode = 1;
-        /// <summary>
-        /// Игрок, сделавший последний ход.
-        /// </summary>
-        public  BelongEnum LastPlayerStep = BelongEnum.None;
-        /// <summary>
-        /// Текущий игрок
-        /// </summary>
-        public BelongEnum CurrentPlayer = BelongEnum.None;
+        
+      
 
 
 

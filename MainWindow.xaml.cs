@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using VirusWar.Engine;
+using VirusWar.Engine.Map;
 
 namespace VirusWar;
 
@@ -17,10 +18,11 @@ public partial class MainWindow : Window
         InitializeComponent();
         Game = new GameLogic(
             new MapStorage("Data/DTO\\"),
-            new MapHandler(),
+            //new MapHandler(),
             new Graphics(Canvas)
             );
-        Game.FirstInit();
+        Game.Init();
+        Game.Stepper((0, 0));
     }
     private void canvas_MouseDown(object sender, MouseButtonEventArgs e)
     {     
