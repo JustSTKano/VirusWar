@@ -18,19 +18,42 @@ namespace VirusWar.Engine
         /// Размерность игрового поля
         /// </summary>
         public (int x, int y) Size { get; private set; }
-
-        
-        public int SizeList { get; private set; }
-
+        /// <summary>
+        /// Ячейка поля
+        /// </summary>
         public MapCell[,] Map { get; private set; } = new MapCell[0, 0];
+        /// <summary>
+        /// Передаточные координаты окрестности вокруг ячейки
+        /// </summary>
+        public readonly (int x, int y)[] Local = [( -1, -1 ), ( -1, 0 ), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)];
+        /// <summary>
+        /// Статус игры
+        /// </summary>
+        public bool IsGameStatus = false;
+        /// <summary>
+        /// Переменная хода
+        /// </summary>
+        public int StepCount = 0;
+        /// <summary>
+        /// Выбор режима игры(Ну бля пока так). 0 - игроки, 1-против компа, 2-комп против компа(тупо отладка)
+        /// </summary>
+        public int Mode = 1;
+        /// <summary>
+        /// Игрок, сделавший последний ход.
+        /// </summary>
+        public  BelongEnum LastPlayerStep = BelongEnum.None;
+        /// <summary>
+        /// Текущий игрок
+        /// </summary>
+        public BelongEnum CurrentPlayer = BelongEnum.None;
 
-        public (int x, int y)[] Local = new (int x, int y)[8];
+
 
 
         /// <summary>
         /// Проверка наличия файлов
         /// </summary>
-        /// <param name="levelsFolder"></param>
+        /// <param name="levelsFolder"></param
         public MapStorage(string levelsFolder)
         {
             Pathlevel = levelsFolder;
@@ -58,12 +81,12 @@ namespace VirusWar.Engine
 
                 for (int j = 0; j < Size.y; j++)
                 {
-                    Map[i, j] = new MapCell
+                    Map[j, i] = new MapCell
                     {
                         Type = linestr[j],
                         Status = StatusEnum.None,
                         Belong = BelongEnum.None,
-                        Checker = false
+                        IsCheck = false
                     };
 
                 }
@@ -75,37 +98,8 @@ namespace VirusWar.Engine
                 Map[a.x, a.y].Status = StatusEnum.Virus;
                 Map[a.x, a.y].Belong = BelongEnum.SecondPlayer;              
             }
-            InitLocality();
-           // TempEnemy();
         }
 
-
-        public void InitLocality()
-        {
-            int temp = 0;
-            for (int i = -1; i<2; i++)
-                for (int j = -1; j< 2; j++)
-                {
-                    Local[temp] = (i, j);
-                    if (!(Local[temp] == (0,0))) temp++;
-                }
-        }
-
-        public void TempEnemy()
-        {
-            Map[4, 5].Status = StatusEnum.Fort;
-            Map[4, 5].Belong = BelongEnum.SecondPlayer;
-            Map[5, 5].Status = StatusEnum.Fort;
-            Map[5, 5].Belong = BelongEnum.SecondPlayer;
-            Map[5, 4].Status = StatusEnum.Fort;
-            Map[5, 4].Belong = BelongEnum.SecondPlayer;
-            Map[6, 4].Status = StatusEnum.Fort;
-            Map[6, 4].Belong = BelongEnum.SecondPlayer;
-            Map[6, 5].Status = StatusEnum.Virus;
-            Map[6, 5].Belong = BelongEnum.SecondPlayer;
-            Map[6, 3].Status = StatusEnum.Virus;
-            Map[6, 3].Belong = BelongEnum.SecondPlayer;
-        }
 
 
 

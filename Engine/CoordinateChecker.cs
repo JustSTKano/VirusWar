@@ -1,4 +1,5 @@
-﻿using System.Windows.Media.Animation;
+﻿using System.Windows.Controls;
+using System.Windows.Media.Animation;
 using VirusWar.Data.Cells;
 
 namespace VirusWar.Engine
@@ -9,61 +10,101 @@ namespace VirusWar.Engine
     /// </summary>
     class CoordinateChecker
     {
-        public static bool CheckCoord(MapStorage Storage, (int x, int y) coord, BelongEnum Player)
+
+        //BelongEnum CurrentPlayer = new();
+        /// <summary>
+        /// Основной первичный метод
+        /// </summary>
+        /// <param name="Storage"></param>
+        /// <param name="coord"></param>
+        /// <param name="Player"></param>
+        /// <returns></returns>
+        public bool CheckCoord(MapStorage Storage, (int x, int y) coord)
         {
             ClearChecker(Storage);
-            if ((Storage.Map[coord.y, coord.x].Type != TypeEnum.Wall)&&(Storage.Map[coord.y, coord.x].Status != StatusEnum.Fort)&&(Storage.Map[coord.y, coord.x].Belong != Player))
+            if (
+                (Storage.Map[coord.y, coord.x].Type != TypeEnum.Wall) &&
+                (Storage.Map[coord.y, coord.x].Status != StatusEnum.Fort) &&
+                (Storage.Map[coord.y, coord.x].Belong != Storage.CurrentPlayer)
+                )
             {
-                if (CheckLocal(Storage, coord, StatusEnum.Virus, Player)) return true;
-                if (CheckFort(Storage, coord, Player)) return true;
+                if (CheckVirusLocal(Storage, coord)) return true;
+                if (CheckFort(Storage, coord)) return true;
             }
             return false;
         }
-        public static bool CheckLocal(MapStorage Storage, (int x, int y) coord, StatusEnum type, BelongEnum Player)
-        {
-            
+        /// <summary>
+        /// Проверка окрестности вокруг текущей ячейки
+        /// </summary>
+        /// <param name="Storage"></param>
+        /// <param name="coord"></param>
+        /// <param name="type"></param>
+        /// <param name="Player"></param>
+        /// <returns></returns>
+        public bool CheckVirusLocal(MapStorage Storage, (int x, int y) coord)
+        {     
             var check = false;
             foreach(var a in Storage.Local)
             {
                 var (x, y) = (coord.x+a.x,coord.y+a.y);
-                if ((Storage.Map[y, x].Status == type) && (Storage.Map[y, x].Belong == Player)) check = true;
+                if ((Storage.Map[y, x].Status == StatusEnum.Virus) && (Storage.Map[y, x].Belong == Storage.CurrentPlayer)) check = true;
             }
             return check;
         }
-        public static bool CheckFort(MapStorage Storage, (int x, int y) coord, BelongEnum Player)
+        /// <summary>
+        /// Рекурсивный метод для проверки цепочки из крепостей. 1
+        /// </summary>
+        /// <param name="Storage"></param>
+        /// <param name="coord"></param>
+        /// <param name="Player"></param>
+        /// <returns></returns>
+        public bool CheckFort(MapStorage Storage, (int x, int y) coord)
         {
             var check = false;
-            Storage.Map[coord.y, coord.x].Checker = true;
+            Storage.Map[coord.y, coord.x].IsCheck = true;
             foreach (var a in Storage.Local)
             {
                 var (x, y) = (coord.x + a.x, coord.y + a.y);
-                if (LastChek(Storage, (x, y), Player)) check = true;
+                if (LastChek(Storage, (x, y))) check = true;
             }
             return check;
         }
-       public static bool LastChek(MapStorage Storage, (int x, int y) coord, BelongEnum Player)
+        /// <summary>
+        /// Рекурсивный метод для проверки цепочки из крепостей. 2
+        /// </summary>
+        /// <param name="Storage"></param>
+        /// <param name="coord"></param>
+        /// <returns></returns>
+        public bool LastChek(MapStorage Storage, (int x, int y) coord)
        {
-           // Trace.WriteLine($"X = {coord.x}, Y = {coord.y}");
             bool check = false;
             var  (x, y) = coord;
-            if ((Storage.Map[y, x].Status == StatusEnum.Fort) && (Storage.Map[y, x].Belong == Player) && (Storage.Map[y, x].Checker == false))
+            if ((Storage.Map[y, x].Status == StatusEnum.Fort) &&
+                (Storage.Map[y, x].Belong == Storage.CurrentPlayer) &&
+                (Storage.Map[y, x].IsCheck == false))
             {
-               // Trace.WriteLine("Try");
-                if (CheckLocal(Storage, (x, y), StatusEnum.Virus, Player)) return true;
-
-                else check = CheckFort(Storage, (x, y), Player);
-               // Trace.WriteLine("No");
+                if (CheckVirusLocal(Storage, (x, y)))
+                {
+                    return true;
+                }
+                else
+                {
+                    check = CheckFort(Storage, (x, y));
+                } 
             }
             return check;
         }
-
-        public static void ClearChecker(MapStorage Storage)
+        /// <summary>
+        /// Очистка карты после проверки крепостей
+        /// </summary>
+        /// <param name="Storage"></param>
+        public void ClearChecker(MapStorage Storage)
         {
             for (int i = 0; i < Storage.Size.x; i++)
             {
                 for (int j = 0; j < Storage.Size.y; j++)
                 {
-                    Storage.Map[i, j].Checker = false;
+                    Storage.Map[i, j].IsCheck = false;
                 }
             }
         }

@@ -8,57 +8,43 @@ namespace VirusWar.Engine
     /// <summary>
     /// Обработчик информации о карте
     /// </summary>
-    internal class MapInfo
+    internal class MapHandler
     {
-        public static bool GameStatus = false;
-        /// <summary>
-        /// Переменная хода
-        /// </summary>
-        static int StepCount = 0;
-        /// <summary>
-        /// Выбор режима игры(Ну бля пока так). 0 - игроки, 1-против компа, 2-комп против компа(тупо отладка)
-        /// </summary>
-        public static int Mode = 1;
-        /// <summary>
-        /// Игрок, сделавший последний ход.
-        /// </summary>
-        public static BelongEnum LastPlayerStep = BelongEnum.None;
-
+        private readonly CoordinateChecker _coordinateChecker = new();
         /// <summary>
         /// Проверка Всех ячеек на возможность сделать ход
         /// </summary>
         /// <param name="Storage"></param>
-        /// <param name="player"></param>
         /// <returns></returns>
         /// 
-        internal static void AllMapChecker(MapStorage Storage, BelongEnum player)
+        internal void AllMapChecker(MapStorage Storage)
         {
+            Storage.CurrentPlayer = GetPlayerTurn(Storage);
             AllMapCleaner(Storage);
-            GameStatus = false;
+            Storage.IsGameStatus = false;
             for (int i = 1; i < Storage.Size.x - 1; i++)
             {
                 for (int j = 1; j < Storage.Size.y - 1; j++)
                 {
-                    if (CoordinateChecker.CheckCoord(Storage, (i, j), player))
+                    if (_coordinateChecker.CheckCoord(Storage, (i, j)))
                     {
                         Storage.Map[j, i].Type = TypeEnum.Possible;
-                        GameStatus = true;
+                        Storage.IsGameStatus = true;
                     }
-
                 }
             }
         }
         /// <summary>
         /// Очистка ячеек перед проверкой
         /// </summary>
-        /// <param name="Reader"></param>
-        internal static void AllMapCleaner(MapStorage Reader)
+        /// <param name="Storage"></param>
+        internal void AllMapCleaner(MapStorage Storage)
         {
-            for (int i = 1; i < Reader.Size.x - 1; i++)
+            for (int i = 1; i < Storage.Size.x - 1; i++)
             {
-                for (int j = 1; j < Reader.Size.y - 1; j++)
+                for (int j = 1; j < Storage.Size.y - 1; j++)
                 {
-                    Reader.Map[j, i].Type = TypeEnum.Empty;
+                    Storage.Map[j, i].Type = TypeEnum.Empty;
                 }
             }
         }
@@ -68,66 +54,47 @@ namespace VirusWar.Engine
         /// <param name="Storage"></param>
         /// <param name="coord"></param>
         /// <returns></returns>
-        public static bool CheckPossibleCoord(MapStorage Storage, (int x, int y) coord)
+        public bool IsCheckPossibleCoord(MapStorage Storage, (int x, int y) coord)
         {
             if (Storage.Map[coord.y, coord.x].Type == TypeEnum.Possible) return true;
             return false;
         }
-
-
-
         /// <summary>
         /// Получение информации об порядке хода (Какой игрок ходит)
         /// </summary>
         /// <returns></returns>
-        internal static BelongEnum GetPlayerTurn()
+        internal BelongEnum GetPlayerTurn(MapStorage Storage)
         {
-            if (((StepCount / 3) % 2) == 0) return BelongEnum.FirstPlayer;
+            if (((Storage.StepCount / 3) % 2) == 0) return BelongEnum.FirstPlayer;
             else return BelongEnum.SecondPlayer;
         }
-
-
         /// <summary>
         /// Перезапись ячейки после сделанного хода
         /// </summary>
         /// <param name="Storage"></param>
         /// <param name="coord"></param>
-        /// <param name="Canvas"></param>
-        internal static void ReWrite(MapStorage Storage, (int x, int y) coord, Canvas Canvas)
+        internal void ReWrite(MapStorage Storage, (int x, int y) coord)
         {
-            if (Storage.Map[coord.y, coord.x].Status == StatusEnum.Virus)
+            var (x, y) = coord;
+            if (Storage.Map[y, x].Status == StatusEnum.Virus)
             {
-                Storage.Map[coord.y, coord.x].Status = StatusEnum.Fort;
-                Storage.Map[coord.y, coord.x].Belong = GetPlayerTurn();
+                Storage.Map[y, x].Status = StatusEnum.Fort;
+                Storage.Map[y, x].Belong = Storage.CurrentPlayer;
             }
             else
             {
-                Storage.Map[coord.y, coord.x].Status = StatusEnum.Virus;
-                Storage.Map[coord.y, coord.x].Belong = GetPlayerTurn();
+                Storage.Map[y, x].Status = StatusEnum.Virus;
+                Storage.Map[y, x].Belong = Storage.CurrentPlayer;
             }
-            LastPlayerStep = GetPlayerTurn();
-            StepCount++;
-
-            AllMapChecker(Storage, GetPlayerTurn());
-            Graphics.RenderMap(Storage, Canvas);
-
-            if(!GameStatus) Winner();
-
-            PCLogic.PCtry(Storage, Canvas);
-            
-
         }
-
         /// <summary>
         /// Проверка победы
         /// </summary>
-        internal static void Winner()
+        internal void FindWinner(MapStorage Storage)
         {
-            var playertemp = GetPlayerTurn();
-
-            if (playertemp == LastPlayerStep)
+            if (Storage.CurrentPlayer == Storage.LastPlayerStep)
             {
-                switch (LastPlayerStep)   /// Ситуация 1. Ты не сделал 3 хода, ходов не осталось. Значит проиграл
+                switch (Storage.LastPlayerStep)   /// Ситуация 1. Ты не сделал 3 хода, ходов не осталось. Значит проиграл
                 {
                     case BelongEnum.FirstPlayer: { MessageBox.Show("Сорян GG, Победил Синий, ты не сделал 3 хода"); break; }
                     case BelongEnum.SecondPlayer: { MessageBox.Show("Сорян GG, Победил Красный, ты не сделал 3 хода"); break; }
@@ -136,15 +103,13 @@ namespace VirusWar.Engine
             }
             else
             {
-                switch (LastPlayerStep) /// Ситуация 2. Ты сделал 3 хода, и следующему игроку некуда ходить, ты выиграл
+                switch (Storage.LastPlayerStep) /// Ситуация 2. Ты сделал 3 хода, и следующему игроку некуда ходить, ты выиграл
                 {
                     case BelongEnum.FirstPlayer: { MessageBox.Show("Сорян GG, Победил Красный, у Синего нет доступных ходов"); break; }
                     case BelongEnum.SecondPlayer: { MessageBox.Show("Сорян GG, Победил Синий, у Красного нет доступных ходов"); break; }
                     default: break;
                 }
             }
-           // MessageBox.Show("ы");
-
         }
     }
 }

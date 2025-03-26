@@ -11,36 +11,41 @@ namespace VirusWar.Engine
     /// <summary>
     /// Графические отрисовщик
     /// </summary>
-    internal static class Graphics
+    internal class Graphics
     {
+        private readonly Canvas _canvas;
+
+        public Graphics(Canvas canvas)
+        {
+            _canvas = canvas;
+        }
+
         /// <summary>
         /// Константа размера ячейки
         /// </summary>
         private const int SizeCell = 50;
-
-
         /// <summary>
         /// Отрисовка карты и объектов
         /// </summary>
         /// <param name="Storage"></param>
         /// <param name="Canvas"></param>
-        public static void RenderMap(MapStorage Storage, Canvas Canvas)
+        public void RenderMap(MapStorage Storage)
         {
-            Canvas.Children.Clear();
+            _canvas.Children.Clear();
 
             for (int i = 0; i < Storage.Size.y; i++)
             {
                 for (int j = 0; j < Storage.Size.x; j++)
                 {
-                    Canvas.Children.Add(MapGen((j + 1) * SizeCell, (i + 1) * SizeCell, Storage.Map[i,j].Type));
-                    if (Storage.Map[i, j].Status == StatusEnum.Virus) Canvas.Children.Add(VirGen((j + 1) * SizeCell, (i + 1) * SizeCell, Storage.Map[i, j].Belong));
-                    if (Storage.Map[i, j].Status == StatusEnum.Fort) Canvas.Children.Add(FortGen((j + 1) * SizeCell, (i + 1) * SizeCell, Storage.Map[i, j].Belong));
+                    _canvas.Children.Add(MapGen((j + 1) * SizeCell, (i + 1) * SizeCell, Storage.Map[i,j].Type));
+                    if (Storage.Map[i, j].Status == StatusEnum.Virus) _canvas.Children.Add(VirGen((j + 1) * SizeCell, (i + 1) * SizeCell, Storage.Map[i, j].Belong));
+                    if (Storage.Map[i, j].Status == StatusEnum.Fort) _canvas.Children.Add(FortGen((j + 1) * SizeCell, (i + 1) * SizeCell, Storage.Map[i, j].Belong));
 
                 }
             }
         }
 
-        private static Ellipse VirGen(double x, double y, BelongEnum belong)
+        private Ellipse VirGen(double x, double y, BelongEnum belong)
         {
             Ellipse vir = new Ellipse()
             {
@@ -60,7 +65,7 @@ namespace VirusWar.Engine
             return vir;
         }
 
-        private static Polyline MapGen(double x, double y, TypeEnum status) => new()
+        private Polyline MapGen(double x, double y, TypeEnum status) => new()
         {
             Stroke = Brushes.Black,
             Fill = status switch
@@ -79,7 +84,7 @@ namespace VirusWar.Engine
                 new Point(x, y)
             }
         };
-        private static Polyline FortGen(double x, double y, BelongEnum belong)
+        private Polyline FortGen(double x, double y, BelongEnum belong)
         {
 
             Polyline Virus = new Polyline();
