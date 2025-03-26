@@ -62,12 +62,12 @@ namespace VirusWar.Engine.Map
                 }
             }
         }
-        
+
         /// <summary>
         /// Получение информации об порядке хода (Какой игрок ходит)
         /// </summary>
         /// <returns></returns>
-        
+
         /// <summary>
         /// Перезапись ячейки после сделанного хода
         /// </summary>
@@ -87,9 +87,12 @@ namespace VirusWar.Engine.Map
                 _storage.Map[y, x].Belong = _player;
             }
         }
-        /// <summary>
-        /// Проверка победы
-        /// </summary>
-        
+
+
+        public bool IsCheckPossibleCoord((int x, int y) coord)
+        {
+            if (_storage.Map[coord.y, coord.x].Type == TypeEnum.Possible) return true;
+            return false;
+        }
     }
 }

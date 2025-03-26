@@ -79,7 +79,7 @@ namespace VirusWar.Engine
                     default: break;
                 }
 
-                if (IsCheckPossibleCoord(tempcoord))
+                if (_do.IsCheckPossibleCoord(tempcoord))
                 {
                     await Step(tempcoord);
                    Init();
@@ -132,17 +132,7 @@ namespace VirusWar.Engine
             return (rnd.Next(0, 11), rnd.Next(0, 11));
         }
 
-        /// <summary>
-        /// Сравнение входящих координат и ячеек в которые возможно сделать ход
-        /// </summary>
-        /// <param name="Storage"></param>
-        /// <param name="coord"></param>
-        /// <returns></returns>
-        public bool IsCheckPossibleCoord((int x, int y) coord)
-        {
-            if (_storage.Map[coord.y, coord.x].Type == TypeEnum.Possible) return true;
-            return false;
-        }
+        
 
         internal void FindWinner()
         {
