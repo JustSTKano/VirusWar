@@ -126,7 +126,7 @@ namespace VirusWar.Engine
             {
                 switch (LastPlayerStep)   /// Ситуация 1. Ты не сделал 3 хода, ходов не осталось. Значит проиграл
                 {
-                    case BelongEnum.FirstPlayer: { MessageBox.Show("Сорян GG, Победил Синий, ты не сделал 3 хода"); break; }
+                    case BelongEnum.FirstPlayer: { MessageBox.Show("Сорян GG, Победил Зеленый, ты не сделал 3 хода"); break; }
                     case BelongEnum.SecondPlayer: { MessageBox.Show("Сорян GG, Победил Красный, ты не сделал 3 хода"); break; }
                     default: break;
                 }
@@ -135,8 +135,8 @@ namespace VirusWar.Engine
             {
                 switch (LastPlayerStep) /// Ситуация 2. Ты сделал 3 хода, и следующему игроку некуда ходить, ты выиграл
                 {
-                    case BelongEnum.FirstPlayer: { MessageBox.Show("Сорян GG, Победил Красный, у Синего нет доступных ходов"); break; }
-                    case BelongEnum.SecondPlayer: { MessageBox.Show("Сорян GG, Победил Синий, у Красного нет доступных ходов"); break; }
+                    case BelongEnum.FirstPlayer: { MessageBox.Show("Сорян GG, Победил Красный, у Зеленого нет доступных ходов"); break; }
+                    case BelongEnum.SecondPlayer: { MessageBox.Show("Сорян GG, Победил Зеленый, у Красного нет доступных ходов"); break; }
                     default: break;
                 }
             }

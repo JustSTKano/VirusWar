@@ -9,7 +9,7 @@ using VirusWar.Engine.Graphics.Interfaces;
 
 namespace VirusWar.Engine.Graphics
 {
-    internal class GraphicsImage(Canvas canvas, Window field) : BaseGraphics(canvas, field), IRenderCell, IRenderImage
+    internal class GraphicsImage(Canvas canvas, Window field) : BaseGraphics(canvas, field), IRenderImage
     {
         public override void RenderMap(MapStorage storage)
         {
@@ -22,33 +22,37 @@ namespace VirusWar.Engine.Graphics
             {
                 for (int j = 0; j < storage.Size.x; j++)
                 {
-                    _canvas.Children.Add(FieldUnitGen((j + 1) * SizeCell, (i + 1) * SizeCell, storage.Map[i, j].Type));
-                    if (storage.Map[i, j].Status == StatusEnum.Virus) _canvas.Children.Add(ImageGen((j + 1) * SizeCell, (i + 1) * SizeCell, storage.Map[i, j].Belong, storage.Map[i, j].Status));
-                    if (storage.Map[i, j].Status == StatusEnum.Fort) _canvas.Children.Add(ImageGen((j + 1) * SizeCell, (i + 1) * SizeCell, storage.Map[i, j].Belong, storage.Map[i, j].Status));
-
+                    _canvas.Children.Add(ImageFieldGen((j + 1) * SizeCell, (i + 1) * SizeCell,storage.Map[i, j].Type));
+                    if (storage.Map[i, j].Status != StatusEnum.None)
+                    {
+                        _canvas.Children.Add(ImageUnitGen((j + 1) * SizeCell, (i + 1) * SizeCell, storage.Map[i, j].Belong, storage.Map[i, j].Status));
+                    }
                 }
             }
         }
-        public Polyline FieldUnitGen(double x, double y, TypeEnum status) => new()
+        public Image ImageFieldGen(double x, double y,TypeEnum type)
         {
-            Stroke = Brushes.Black,
-            Fill = status switch
+            string fname = type switch
             {
-                TypeEnum.Empty => Brushes.White,
-                TypeEnum.Wall => Brushes.Black,
-                TypeEnum.Possible => Brushes.Gray,
+                TypeEnum.Wall=> "Wall",
+                TypeEnum.Empty => "Empty",
+                TypeEnum.Possible => "Possyble",
                 _ => throw new NotImplementedException()
-            },
-            Points = new PointCollection()
+            };
+            Image unit = new Image()
             {
-                new Point(x, y),
-                new Point(x, y + SizeCell),
-                new Point(x + SizeCell, y + SizeCell),
-                new Point(x + SizeCell, y),
-                new Point(x, y)
-            }
-        };
-        public Image ImageGen(double x, double y, BelongEnum belong, StatusEnum status)
+                Width = SizeCell,
+                Height = SizeCell,
+
+                Source = new BitmapImage(new Uri($"Engine/Graphics/Icons/{fname}.png", UriKind.Relative))
+            };
+            unit.SetValue(Canvas.LeftProperty, x);
+            unit.SetValue(Canvas.TopProperty, y);
+
+            return unit;
+        }
+
+        public Image ImageUnitGen(double x, double y, BelongEnum belong, StatusEnum status)
         {
             string fname = status switch
             {
@@ -74,18 +78,5 @@ namespace VirusWar.Engine.Graphics
 
             return unit;
         }
-
-
-
-        public Polyline FortGen(double x, double y, BelongEnum belong)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Ellipse VirGen(double x, double y, BelongEnum belong)
-        {
-            throw new NotImplementedException();
-        }
-
     }
 }

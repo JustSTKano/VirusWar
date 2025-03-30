@@ -22,7 +22,8 @@ namespace VirusWar.Engine.Graphics.Interfaces
         /// <param name="belong">Какому игроку принадлежит</param>
         /// <param name="status">Какого типа ячейка</param>
         /// <returns></returns>
-        public abstract Image ImageGen(double x, double y, BelongEnum belong, StatusEnum status);
+        public abstract Image ImageUnitGen(double x, double y, BelongEnum belong, StatusEnum status);
+        public abstract Image ImageFieldGen(double x, double y,TypeEnum type);
 
     }
 }
