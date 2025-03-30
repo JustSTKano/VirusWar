@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using VirusWar.Engine;
+using VirusWar.Engine.Graphics;
 using VirusWar.Engine.Map;
 
 namespace VirusWar;
@@ -18,7 +19,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         Game = new GameLogic(
             new MapStorage("Data/DTO\\"),
-            new Graphics(Canvas)
+            new GraphicsImage(Canvas, Field)
         );
         Game.UpdateState();
         Game.Stepper((0, 0));

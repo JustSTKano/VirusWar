@@ -10,7 +10,6 @@ namespace VirusWar.Engine.Map
     /// </summary>
     internal class MapHandler
     {
-        //private readonly CoordinateChecker _coordinateChecker = new();
         private readonly MapStorage _storage;
         public BelongEnum _player;
 
@@ -19,10 +18,6 @@ namespace VirusWar.Engine.Map
             _storage = storage;
             _player = player;
         }
-
-
-       /* public MapCell[,] Map => _storage.Map;
-        public (int x, int y) Size => _storage.Size;*/
 
         /// <summary>
         /// Проверка Всех ячеек на возможность сделать ход

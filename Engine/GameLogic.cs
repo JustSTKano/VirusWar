@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using VirusWar.Data.Cells;
 using VirusWar.Data.DTO;
 using VirusWar.Engine.Map;
+using VirusWar.Engine.Graphics;
 
 namespace VirusWar.Engine
 {
@@ -16,10 +17,10 @@ namespace VirusWar.Engine
     {
 
         private readonly MapHandler _do;
-        private readonly Graphics _graphics;
+        private readonly BaseGraphics _graphics;
         private readonly MapStorage _storage;
 
-        public GameLogic(MapStorage storage,  Graphics graphics)
+        public GameLogic(MapStorage storage, BaseGraphics graphics)
         {
             _storage = storage;
             _graphics = graphics;

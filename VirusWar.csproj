@@ -14,5 +14,11 @@
 		</Content>
 	</ItemGroup>
 
+	<ItemGroup>
+		<Content Include="Engine\Graphics\Icons\*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
 
 </Project>
