@@ -18,10 +18,9 @@ public partial class MainWindow : Window
         InitializeComponent();
         Game = new GameLogic(
             new MapStorage("Data/DTO\\"),
-            //new MapHandler(),
             new Graphics(Canvas)
-            );
-        Game.Init();
+        );
+        Game.UpdateState();
         Game.Stepper((0, 0));
     }
     private void canvas_MouseDown(object sender, MouseButtonEventArgs e)

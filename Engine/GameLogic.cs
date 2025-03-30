@@ -15,15 +15,15 @@ namespace VirusWar.Engine
     internal class GameLogic
     {
 
-        private MapHandler _do;
+        private readonly MapHandler _do;
         private readonly Graphics _graphics;
         private readonly MapStorage _storage;
 
         public GameLogic(MapStorage storage,  Graphics graphics)
         {
             _storage = storage;
-            //_do = handler;
             _graphics = graphics;
+            _do = new MapHandler(_storage, GetPlayerTurn());
         }
         /// <summary>
         /// Статус игры
@@ -49,21 +49,15 @@ namespace VirusWar.Engine
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="Storage"></param>
-        /// <param name="Info"></param>
-        /// <param name="Canvas"></param>
-        public void Init()
+        public void UpdateState()
         {
-            _do = new MapHandler(_storage, GetPlayerTurn());
+            _do._player = GetPlayerTurn();
             IsGameStatus = _do.AllMapChecker();
             _graphics.RenderMap(_storage);
-            //Stepper(GetCordFromPC());
         }
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="_do"></param>
-        /// <param name="Canvas"></param>
         /// <param name="coord"></param>
         public async void Stepper((int x, int y) coord)
         {
@@ -78,13 +72,11 @@ namespace VirusWar.Engine
                     case 2: { player = GetPlayerTurn(); tempcoord = GetCordFromPC(); break; }
                     default: break;
                 }
-
                 if (_do.IsCheckPossibleCoord(tempcoord))
                 {
                     await Step(tempcoord);
-                   Init();
-                }    
-                    
+                    UpdateState();
+                }                        
                 if (Mode == 2)
                 {
                     player = GetPlayerTurn();
@@ -98,9 +90,6 @@ namespace VirusWar.Engine
         /// <summary>
         /// Единичный шаг
         /// </summary>
-        /// <param name="_storage"></param>
-        /// <param name="_info"></param>
-        /// <param name="Canvas"></param>
         /// <param name="coord"></param>
         public async Task Step((int x, int y) coord)
         {
@@ -111,15 +100,11 @@ namespace VirusWar.Engine
             {
                 await Task.Run(() => Thread.Sleep(300));
             }
-            /*_do = new MapHandler(_storage, GetPlayerTurn());
-            IsGameStatus = _do.AllMapChecker();
-            _graphics.RenderMap(_storage);*/
         }
         /// <summary>
         /// Тупой рандом. Берем координаты для пк
         /// </summary>
         /// <returns></returns>
-        /// 
         internal BelongEnum GetPlayerTurn()
         {
             if (StepCount / 3 % 2 == 0) return BelongEnum.FirstPlayer;

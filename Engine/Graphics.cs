@@ -24,6 +24,7 @@ namespace VirusWar.Engine
         /// Константа размера ячейки
         /// </summary>
         private const int SizeCell = 50;
+
         /// <summary>
         /// Отрисовка карты и объектов
         /// </summary>

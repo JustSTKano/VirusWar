@@ -12,7 +12,7 @@ namespace VirusWar.Engine.Map
     {
         //private readonly CoordinateChecker _coordinateChecker = new();
         private readonly MapStorage _storage;
-        private readonly BelongEnum _player;
+        public BelongEnum _player;
 
         public MapHandler(MapStorage storage, BelongEnum player)
         {
