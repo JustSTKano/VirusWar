@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Input;
 using VirusWar.Engine;
 using VirusWar.Engine.Graphics;
-using VirusWar.Engine.Map;
 
 namespace VirusWar;
 
